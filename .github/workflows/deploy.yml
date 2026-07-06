@@ -11,6 +11,13 @@ jobs:
     name: Deploy to cPanel
     runs-on: ubuntu-latest
 
+    # Map secrets to job-level env variables so they can be securely referenced in step conditions
+    env:
+      SSH_HOST_CONFIGURED: ${{ secrets.SSH_HOST }}
+      SSH_USER_CONFIGURED: ${{ secrets.SSH_USER }}
+      SSH_KEY_CONFIGURED: ${{ secrets.SSH_PRIVATE_KEY }}
+      FTP_HOST_CONFIGURED: ${{ secrets.FTP_HOST }}
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -44,7 +51,7 @@ jobs:
       # PATH A: SSH & Rsync Deployment (Recommended)
       # ----------------------------------------------------
       - name: Deploy via SSH & Rsync
-        if: ${{ secrets.SSH_HOST != '' && secrets.SSH_USER != '' && secrets.SSH_PRIVATE_KEY != '' }}
+        if: ${{ env.SSH_HOST_CONFIGURED != '' && env.SSH_USER_CONFIGURED != '' && env.SSH_KEY_CONFIGURED != '' }}
         env:
           SSH_HOST: ${{ secrets.SSH_HOST }}
           SSH_USER: ${{ secrets.SSH_USER }}
@@ -60,7 +67,7 @@ jobs:
       # PATH B: FTP & SFTP Deployment (Fallback)
       # ----------------------------------------------------
       - name: Check FTP Deployment Prerequisites
-        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' }}
+        if: ${{ (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' }}
         run: |
           if [ -z "${{ secrets.DEPLOY_TOKEN }}" ] || [ -z "${{ secrets.HEALTH_CHECK_URL }}" ]; then
             echo "ERROR: DEPLOY_TOKEN and HEALTH_CHECK_URL secrets are required for backup/rollback during FTP deployment."
@@ -69,7 +76,7 @@ jobs:
 
       - name: Trigger Remote Backup via PHP Helper (FTP Path)
         id: ftp-backup
-        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' }}
+        if: ${{ (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' }}
         run: |
           echo "Requesting cPanel server backup..."
           RESPONSE=$(curl -s -w "%{http_code}" -X POST \
@@ -90,7 +97,7 @@ jobs:
 
       - name: Deploy files via FTP
         id: ftp-deploy
-        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' }}
+        if: ${{ (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' }}
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_HOST }}
@@ -120,7 +127,7 @@ jobs:
 
       - name: Verify Web App Health (FTP Path)
         id: ftp-health-check
-        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' && steps.ftp-deploy.outcome == 'success' }}
+        if: ${{ (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' && steps.ftp-deploy.outcome == 'success' }}
         run: |
           echo "Verifying website health at ${{ secrets.HEALTH_CHECK_URL }}..."
           STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" "${{ secrets.HEALTH_CHECK_URL }}")
@@ -131,7 +138,7 @@ jobs:
           fi
 
       - name: Rollback on FTP Deployment Failure
-        if: ${{ always() && (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' && (steps.ftp-deploy.outcome != 'success' || steps.ftp-health-check.outcome != 'success') }}
+        if: ${{ always() && (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' && (steps.ftp-deploy.outcome != 'success' || steps.ftp-health-check.outcome != 'success') }}
         run: |
           echo "Deployment or health check failed. Requesting server restore..."
           RESPONSE=$(curl -s -w "%{http_code}" -X POST \
