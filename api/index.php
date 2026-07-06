@@ -240,6 +240,12 @@ try {
     elseif ($route === "upload" && $method === "POST") {
         requireAdmin();
         if (!isset($_FILES['image'])) {
+            $contentLength = isset($_SERVER['CONTENT_LENGTH']) ? (int)$_SERVER['CONTENT_LENGTH'] : 0;
+            if ($contentLength > 0) {
+                $maxPost = ini_get('post_max_size');
+                $maxUpload = ini_get('upload_max_filesize');
+                resError("The uploaded file is too large for the server. (File size: " . round($contentLength / 1024 / 1024, 2) . "MB. Max Upload limit: $maxUpload, Max Post limit: $maxPost). Please upload a smaller/compressed image.");
+            }
             resError("Please upload an image file");
         }
         $file = $_FILES['image'];
