@@ -77,15 +77,15 @@ Log in to cPanel, go to **FTP Accounts**, and note down:
 | `HEALTH_CHECK_URL` | URL of your site to verify post-deployment | `https://example.com/` |
 
 ### Secrets for Option B: FTP / SFTP (Fallback)
-| Secret Name | Description | Example Value |
+| Secret Name | Description | Verified Value to Use |
 | :--- | :--- | :--- |
-| `FTP_HOST` | FTP host address | `ftp.example.com` |
-| `FTP_USER` | FTP username | `deployer@example.com` |
-| `FTP_PASSWORD` | FTP password | `SuperSecurePassword123` |
+| `FTP_HOST` | FTP host address | `padminivasthra.com` |
+| `FTP_USER` | FTP username | `padminivasthra` |
+| `FTP_PASSWORD` | FTP password | `=2YktVB};[y3` |
 | `FTP_SERVER_DIR` | Directory relative to FTP root to upload to | `public_html/` |
 | `FTP_PORT` | FTP Port (usually 21) | `21` |
-| `DEPLOY_TOKEN` | The secret token set in `.env` / `cpanel-deploy-helper.php` | `your_super_secret_random_passphrase` |
-| `HEALTH_CHECK_URL` | URL of your site to verify post-deployment | `https://example.com/` |
+| `DEPLOY_TOKEN` | The secret token set in `cpanel-deploy-helper.php` | `padmini_deploy_token_2026_xyz` |
+| `HEALTH_CHECK_URL` | URL of your site to verify post-deployment | `https://padminivasthra.com/` |
 
 ---
 
