@@ -12157,8 +12157,59 @@ function dt() {
         });
       }
       try {
+        let fileToUpload = t;
+        if (t.size > 1024 * 1024) {
+          try {
+            fileToUpload = await new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                  const canvas = document.createElement('canvas');
+                  let width = img.width;
+                  let height = img.height;
+                  const MAX_WIDTH = 1600;
+                  const MAX_HEIGHT = 1600;
+                  if (width > height) {
+                    if (width > MAX_WIDTH) {
+                      height *= MAX_WIDTH / width;
+                      width = MAX_WIDTH;
+                    }
+                  } else {
+                    if (height > MAX_HEIGHT) {
+                      width *= MAX_HEIGHT / height;
+                      height = MAX_HEIGHT;
+                    }
+                  }
+                  canvas.width = width;
+                  canvas.height = height;
+                  const ctx = canvas.getContext('2d');
+                  ctx.drawImage(img, 0, 0, width, height);
+                  canvas.toBlob((blob) => {
+                    if (!blob) {
+                      resolve(t);
+                      return;
+                    }
+                    const name = t.name ? t.name.replace(/\.[^/.]+$/, "") + ".jpg" : "upload.jpg";
+                    const compressedFile = new File([blob], name, {
+                      type: "image/jpeg",
+                      lastModified: Date.now()
+                    });
+                    resolve(compressedFile);
+                  }, 'image/jpeg', 0.85);
+                };
+                img.onerror = () => resolve(t);
+                img.src = event.target.result;
+              };
+              reader.onerror = () => resolve(t);
+              reader.readAsDataURL(t);
+            });
+          } catch (compErr) {
+            console.warn("Client-side compression failed, uploading original file", compErr);
+          }
+        }
         let n = new FormData();
-        n.append(`image`, t);
+        n.append(`image`, fileToUpload);
         let r = await fetch(`${H}/upload`, {
             method: `POST`,
             headers: { Authorization: `Bearer ${freshToken}` },
