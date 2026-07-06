@@ -40,19 +40,7 @@ If your cPanel hosting package includes **SSH Access** (shell access), use this 
 ### Option B: FTP / SFTP (Fallback)
 If your host has disabled SSH access, you can deploy using FTP/SFTP.
 
-#### 1. Configure the PHP Helper
-1. Open the file `cpanel-deploy-helper.php` which was generated in your repository root.
-2. (Optional but recommended) Open your server's `.env` file on cPanel and add a long, random secret:
-   ```env
-   DEPLOY_TOKEN=your_super_secret_random_passphrase
-   ```
-   *Alternatively, you can hardcode this token inside `cpanel-deploy-helper.php` on line 17:*
-   ```php
-   $secret_token = 'your_super_secret_random_passphrase';
-   ```
-3. Upload `cpanel-deploy-helper.php` to your live website root directory (e.g. `public_html/`) using cPanel File Manager.
-
-#### 2. Retrieve FTP Credentials
+#### 1. Retrieve FTP Credentials
 Log in to cPanel, go to **FTP Accounts**, and note down:
 *   **FTP Server Host**: (e.g. `ftp.example.com` or your domain/IP)
 *   **FTP Username**: (e.g. `deployer@example.com` or cPanel username)
