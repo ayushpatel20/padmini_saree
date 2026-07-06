@@ -106,7 +106,6 @@ jobs:
           port: ${{ secrets.FTP_PORT || 21 }}
           server-dir: ${{ secrets.FTP_SERVER_DIR }}
           local-dir: ./
-          dangerous-clean-cut: true # deletes files on the server that are not in the git repository
           exclude: |
             **/.git*
             **/.git*/**
