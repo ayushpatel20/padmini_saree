@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <title>Padmini Vastra — Celebrating Indian Handlooms</title>
+    <style>
+      /* Prevent white flash before React mounts */
+      *, *::before, *::after { box-sizing: border-box; }
+      html {
+        margin: 0; padding: 0; background: #ffffff;
+        /* Native smooth scrolling for anchor links and programmatic scrolls */
+        scroll-behavior: smooth;
+        /* Extra scroll padding so the sticky header doesn't overlap anchor targets */
+        scroll-padding-top: 80px;
+      }
+      body { margin: 0; padding: 0; background: #ffffff; -webkit-font-smoothing: antialiased; }
+      #root { min-height: 100vh; display: flex; flex-direction: column; background: #ffffff; }
+      /* Skeleton shimmer while page loads */
+      #root:empty {
+        background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: shimmer 1.5s infinite;
+      }
+      @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+      /* Page fade-in animation used by React routes */
+      @keyframes pageFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+      .page-enter { animation: pageFadeIn 0.22s ease forwards; }
+    </style>
+    <script type="module" crossorigin src="/assets/index-v4-C8YDeaP-.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-Bh1tDfsg.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor--CgQO9gb.js">
+    <link rel="stylesheet" crossorigin href="/assets/index-CCZgylqJ.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
+
+
+
+

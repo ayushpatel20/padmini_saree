@@ -1,0 +1,153 @@
+name: Automated cPanel Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to cPanel
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Fetch all history for git diff if needed
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install Dependencies & Run Build (Conditional)
+        run: |
+          if [ -f "package.json" ]; then
+            echo "package.json found. Installing dependencies..."
+            npm ci || npm install
+            
+            # Check if there is a build script in package.json
+            if node -e "const pkg = require('./package.json'); process.exit(pkg.scripts && pkg.scripts.build ? 0 : 1)"; then
+              echo "Build script detected. Running npm run build..."
+              npm run build
+            else
+              echo "No build script detected in package.json. Skipping build step."
+            fi
+          else
+            echo "No package.json found. Skipping npm steps."
+          fi
+
+      # ----------------------------------------------------
+      # PATH A: SSH & Rsync Deployment (Recommended)
+      # ----------------------------------------------------
+      - name: Deploy via SSH & Rsync
+        if: ${{ secrets.SSH_HOST != '' && secrets.SSH_USER != '' && secrets.SSH_PRIVATE_KEY != '' }}
+        env:
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          HEALTH_CHECK_URL: ${{ secrets.HEALTH_CHECK_URL }}
+        run: |
+          chmod +x scripts/cpanel-deploy.sh
+          ./scripts/cpanel-deploy.sh
+
+      # ----------------------------------------------------
+      # PATH B: FTP & SFTP Deployment (Fallback)
+      # ----------------------------------------------------
+      - name: Check FTP Deployment Prerequisites
+        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' }}
+        run: |
+          if [ -z "${{ secrets.DEPLOY_TOKEN }}" ] || [ -z "${{ secrets.HEALTH_CHECK_URL }}" ]; then
+            echo "ERROR: DEPLOY_TOKEN and HEALTH_CHECK_URL secrets are required for backup/rollback during FTP deployment."
+            exit 1
+          fi
+
+      - name: Trigger Remote Backup via PHP Helper (FTP Path)
+        id: ftp-backup
+        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' }}
+        run: |
+          echo "Requesting cPanel server backup..."
+          RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+            -d "action=backup" \
+            -d "token=${{ secrets.DEPLOY_TOKEN }}" \
+            "${{ secrets.HEALTH_CHECK_URL }}/cpanel-deploy-helper.php")
+          
+          STATUS=${RESPONSE: -3}
+          BODY=${RESPONSE:0:${#RESPONSE}-3}
+          
+          echo "Server Response Status: $STATUS"
+          echo "Server Response Body: $BODY"
+          
+          if [ "$STATUS" -ne 200 ] || [[ "$BODY" != *"SUCCESS"* ]]; then
+            echo "Backup failed. Aborting deployment."
+            exit 1
+          fi
+
+      - name: Deploy files via FTP
+        id: ftp-deploy
+        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT || 21 }}
+          server-dir: ${{ secrets.FTP_SERVER_DIR }}
+          local-dir: ./
+          dangerous-clean-cut: true # deletes files on the server that are not in the git repository
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            **/.github/**
+            **/scripts/**
+            **/.cpanel/**
+            **/.well-known/**
+            **/logs/**
+            **/tmp/**
+            **/backups/**
+            **/mail/**
+            **/ssl/**
+            **/.env
+            **/api/db.json
+            **/uploads/**
+            **/cpanel-deploy-helper.php
+
+      - name: Verify Web App Health (FTP Path)
+        id: ftp-health-check
+        if: ${{ (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' && steps.ftp-deploy.outcome == 'success' }}
+        run: |
+          echo "Verifying website health at ${{ secrets.HEALTH_CHECK_URL }}..."
+          STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" "${{ secrets.HEALTH_CHECK_URL }}")
+          echo "Health check status: $STATUS_CODE"
+          if [ "$STATUS_CODE" -lt 200 ] || [ "$STATUS_CODE" -ge 400 ]; then
+            echo "Health check failed with status $STATUS_CODE. Triggering rollback..."
+            exit 1
+          fi
+
+      - name: Rollback on FTP Deployment Failure
+        if: ${{ always() && (secrets.SSH_HOST == '' || secrets.SSH_USER == '' || secrets.SSH_PRIVATE_KEY == '') && secrets.FTP_HOST != '' && (steps.ftp-deploy.outcome != 'success' || steps.ftp-health-check.outcome != 'success') }}
+        run: |
+          echo "Deployment or health check failed. Requesting server restore..."
+          RESPONSE=$(curl -s -w "%{http_code}" -X POST \
+            -d "action=rollback" \
+            -d "token=${{ secrets.DEPLOY_TOKEN }}" \
+            "${{ secrets.HEALTH_CHECK_URL }}/cpanel-deploy-helper.php")
+          
+          STATUS=${RESPONSE: -3}
+          BODY=${RESPONSE:0:${#RESPONSE}-3}
+          
+          echo "Rollback Status: $STATUS"
+          echo "Rollback Body: $BODY"
+          
+          if [ "$STATUS" -ne 200 ] || [[ "$BODY" != *"SUCCESS"* ]]; then
+            echo "FATAL: Rollback failed. Remote server may be in an inconsistent state. Manual intervention required."
+          else
+            echo "Rollback completed successfully."
+          fi
+          exit 1
