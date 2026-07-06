@@ -29,6 +29,7 @@ akaya_cpanel_deploy.zip
 
 # Uploaded content (Ignore files in uploads, but keep the directory)
 uploads/*
+!uploads/categories/
 !uploads/.gitkeep
 uploads/categories/*
 !uploads/categories/.gitkeep
