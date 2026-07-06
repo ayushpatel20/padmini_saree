@@ -1451,7 +1451,7 @@ function Ce({ onComplete: e, onSwitchToLogin: t }) {
 var X = `All requests for returns must be initiated by the customer within 3 days of receiving the product.
 In case of return/refund, Rs 200 will be deducted for delivery and handling charges. Exchange can be placed within 3 days of receiving the order with no extra cost. Exchange can be placed only once.
 To initiate a return, please send us an email at
-padminivastra@gmail.com or WhatsApp at 9990901656.
+padminivastra@gmail.com or WhatsApp at 9633521642.
 Please ensure the merchandise is unused, unworn, undamaged, and in its original
 condition with all the tags and labels intact. Please refer to our standard policy for more details.`,
   Z = {
@@ -4943,7 +4943,7 @@ function je() {
                     children: [
                       (0, G.jsx)(`li`, {
                         children: (0, G.jsxs)(`a`, {
-                          href: `https://www.instagram.com/padminivastra`,
+                          href: `https://www.instagram.com/padminivasthra?igsh=MWk4eHhkaHFzdXNlbQ%3D%3D&utm_source=qr`,
                           target: `_blank`,
                           rel: `noopener noreferrer`,
                           className: `footer-link-item`,
@@ -4982,9 +4982,11 @@ function je() {
                         }),
                       }),
                       (0, G.jsx)(`li`, {
-                        children: (0, G.jsxs)(`span`, {
-                          className: `footer-link-item footer-link-upcoming`,
-                          title: `Upcoming`,
+                        children: (0, G.jsxs)(`a`, {
+                          href: `https://www.facebook.com/share/1E6cJLryN9/?mibextid=wwXIfr`,
+                          target: `_blank`,
+                          rel: `noopener noreferrer`,
+                          className: `footer-link-item`,
                           children: [
                             (0, G.jsx)(`svg`, {
                               width: `14`,
@@ -5000,10 +5002,6 @@ function je() {
                               }),
                             }),
                             `Facebook`,
-                            (0, G.jsx)(`span`, {
-                              className: `footer-upcoming-badge`,
-                              children: `Upcoming`,
-                            }),
                           ],
                         }),
                       }),
@@ -8898,8 +8896,8 @@ function We() {
                 `You can call / WhatsApp us at`,
                 ` `,
                 (0, G.jsx)(`a`, {
-                  href: `https://wa.me/919990901656`,
-                  children: `+91 99909 01656`,
+                  href: `https://wa.me/919633521642`,
+                  children: `+91 96335 21642`,
                 }),
               ],
             }),
@@ -8912,10 +8910,10 @@ function We() {
                 `Instagram —`,
                 ` `,
                 (0, G.jsx)(`a`, {
-                  href: `https://www.instagram.com/padminivastra`,
+                  href: `https://www.instagram.com/padminivasthra?igsh=MWk4eHhkaHFzdXNlbQ%3D%3D&utm_source=qr`,
                   target: `_blank`,
                   rel: `noopener noreferrer`,
-                  children: `@padminivastra`,
+                  children: `@padminivasthra`,
                 }),
               ],
             }),
@@ -14293,7 +14291,7 @@ function pt() {
         }),
         (0, G.jsx)(je, {}),
         (0, G.jsx)(`a`, {
-          href: `https://wa.me/919990901656`,
+          href: `https://wa.me/919633521642`,
           target: `_blank`,
           rel: `noopener noreferrer`,
           "aria-label": `Chat on WhatsApp`,
