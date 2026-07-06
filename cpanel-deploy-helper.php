@@ -16,7 +16,7 @@ header('Content-Type: application/json');
 
 // --- Configuration ---
 // Define a hardcoded token fallback, or it will attempt to read DEPLOY_TOKEN from .env
-$secret_token = ''; 
+$secret_token = 'padmini_deploy_token_2026_xyz'; 
 
 // Define paths to exclude from backups
 $exclusions = [
