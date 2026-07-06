@@ -69,29 +69,8 @@ jobs:
       - name: Check FTP Deployment Prerequisites
         if: ${{ (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' }}
         run: |
-          if [ -z "${{ secrets.DEPLOY_TOKEN }}" ] || [ -z "${{ secrets.HEALTH_CHECK_URL }}" ]; then
-            echo "ERROR: DEPLOY_TOKEN and HEALTH_CHECK_URL secrets are required for backup/rollback during FTP deployment."
-            exit 1
-          fi
-
-      - name: Trigger Remote Backup via PHP Helper (FTP Path)
-        id: ftp-backup
-        if: ${{ (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' }}
-        run: |
-          echo "Requesting cPanel server backup..."
-          RESPONSE=$(curl -s -w "%{http_code}" -X POST \
-            -d "action=backup" \
-            -d "token=${{ secrets.DEPLOY_TOKEN }}" \
-            "${{ secrets.HEALTH_CHECK_URL }}/cpanel-deploy-helper.php")
-          
-          STATUS=${RESPONSE: -3}
-          BODY=${RESPONSE:0:${#RESPONSE}-3}
-          
-          echo "Server Response Status: $STATUS"
-          echo "Server Response Body: $BODY"
-          
-          if [ "$STATUS" -ne 200 ] || [[ "$BODY" != *"SUCCESS"* ]]; then
-            echo "Backup failed. Aborting deployment."
+          if [ -z "${{ secrets.HEALTH_CHECK_URL }}" ]; then
+            echo "ERROR: HEALTH_CHECK_URL secret is required for verifying FTP deployment health."
             exit 1
           fi
 
@@ -132,28 +111,7 @@ jobs:
           STATUS_CODE=$(curl -o /dev/null -s -w "%{http_code}" "${{ secrets.HEALTH_CHECK_URL }}")
           echo "Health check status: $STATUS_CODE"
           if [ "$STATUS_CODE" -lt 200 ] || [ "$STATUS_CODE" -ge 400 ]; then
-            echo "Health check failed with status $STATUS_CODE. Triggering rollback..."
+            echo "Health check failed with status $STATUS_CODE. Website is offline or returned an error."
             exit 1
           fi
-
-      - name: Rollback on FTP Deployment Failure
-        if: ${{ always() && (env.SSH_HOST_CONFIGURED == '' || env.SSH_USER_CONFIGURED == '' || env.SSH_KEY_CONFIGURED == '') && env.FTP_HOST_CONFIGURED != '' && (steps.ftp-deploy.outcome != 'success' || steps.ftp-health-check.outcome != 'success') }}
-        run: |
-          echo "Deployment or health check failed. Requesting server restore..."
-          RESPONSE=$(curl -s -w "%{http_code}" -X POST \
-            -d "action=rollback" \
-            -d "token=${{ secrets.DEPLOY_TOKEN }}" \
-            "${{ secrets.HEALTH_CHECK_URL }}/cpanel-deploy-helper.php")
-          
-          STATUS=${RESPONSE: -3}
-          BODY=${RESPONSE:0:${#RESPONSE}-3}
-          
-          echo "Rollback Status: $STATUS"
-          echo "Rollback Body: $BODY"
-          
-          if [ "$STATUS" -ne 200 ] || [[ "$BODY" != *"SUCCESS"* ]]; then
-            echo "FATAL: Rollback failed. Remote server may be in an inconsistent state. Manual intervention required."
-          else
-            echo "Rollback completed successfully."
-          fi
-          exit 1
+          echo "Website is online and healthy!"
