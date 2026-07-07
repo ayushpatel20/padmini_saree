@@ -1,0 +1,41 @@
+# Dependencies
+node_modules/
+
+# Environment configurations
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+error_log
+
+# Local database backup (dynamic database should not be committed)
+# Keep only default database templates in git if you want, but avoid tracking active production changes.
+# If you want to commit an initial schema, you can commit it, but we recommend avoiding tracking.
+# For now, we allow db.json in git if you want a default state, but ignore logs/backups.
+backups/
+
+# Manual Zip uploads (clean up old zip files)
+*.zip
+*.tar.gz
+akaya_cpanel_deploy.zip
+
+# Uploaded content (Ignore files in uploads, but keep the directory)
+uploads/*
+!uploads/categories/
+!uploads/.gitkeep
+uploads/categories/*
+!uploads/categories/.gitkeep
+
+# IDEs and OS files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
