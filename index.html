@@ -1,43 +1,106 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <title>Padmini Vastra — Celebrating Indian Handlooms</title>
-    <style>
-      /* Prevent white flash before React mounts */
-      *, *::before, *::after { box-sizing: border-box; }
-      html {
-        margin: 0; padding: 0; background: #ffffff;
-        /* Native smooth scrolling for anchor links and programmatic scrolls */
-        scroll-behavior: smooth;
-        /* Extra scroll padding so the sticky header doesn't overlap anchor targets */
-        scroll-padding-top: 80px;
-      }
-      body { margin: 0; padding: 0; background: #ffffff; -webkit-font-smoothing: antialiased; }
-      #root { min-height: 100vh; display: flex; flex-direction: column; background: #ffffff; }
-      /* Skeleton shimmer while page loads */
-      #root:empty {
-        background: linear-gradient(90deg, #f0f0f0 25%, #f8f8f8 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: shimmer 1.5s infinite;
-      }
-      @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-      /* Page fade-in animation used by React routes */
-      @keyframes pageFadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-      .page-enter { animation: pageFadeIn 0.22s ease forwards; }
-    </style>
-    <script type="module" crossorigin src="/assets/index-v4-C8YDeaP-.js"></script>
-    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-Bh1tDfsg.js">
-    <link rel="modulepreload" crossorigin href="/assets/vendor--CgQO9gb.js">
-    <link rel="stylesheet" crossorigin href="/assets/index-CCZgylqJ.css">
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hello World</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      color: #fff;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(16px);
+      border-radius: 24px;
+      padding: 3.5rem 4rem;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+      animation: fadeUp 0.6s ease forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .greeting {
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #a78bfa;
+      margin-bottom: 1rem;
+    }
+
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 3.5rem);
+      font-weight: 700;
+      background: linear-gradient(90deg, #c084fc, #818cf8, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.15;
+      margin-bottom: 2rem;
+    }
+
+    .divider {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #a78bfa, #60a5fa);
+      border-radius: 2px;
+      margin: 0 auto 2rem;
+    }
+
+    .contact-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin-bottom: 0.6rem;
+    }
+
+    .contact-name {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #e2e8f0;
+      letter-spacing: 0.04em;
+    }
+
+    .contact-icon {
+      display: inline-block;
+      margin-right: 8px;
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p class="greeting">Welcome</p>
+    <h1>Hello World</h1>
+    <div class="divider"></div>
+    <p class="contact-label">Contact</p>
+    <p class="contact-name"><span class="contact-icon">📞</span>Amardeep</p>
+  </div>
+</body>
 </html>
-
-
-
-
