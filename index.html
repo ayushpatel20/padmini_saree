@@ -34,10 +34,18 @@
     <link rel="stylesheet" crossorigin href="/assets/index-CCZgylqJ.css">
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root"></div>
+    <!-- Pipeline Test Indicator Badge -->
+    <div id="pipeline-status" style="position: fixed; bottom: 20px; right: 20px; z-index: 99999; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 16px; border-radius: 30px; font-family: sans-serif; font-size: 13px; font-weight: 600; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); display: flex; align-items: center; gap: 8px; border: 1px solid rgba(255, 255, 255, 0.2); transition: transform 0.2s ease-in-out;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      <span style="display: inline-block; width: 8px; height: 8px; background-color: #2ecc71; border-radius: 50%; box-shadow: 0 0 8px #2ecc71; animation: pulse 1.5s infinite;"></span>
+      <span>Pipeline Deployment Test: Active</span>
+    </div>
+    <style>
+    @keyframes pulse {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(46, 204, 113, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+    }
+    </style>
   </body>
 </html>
-
-
-
-
